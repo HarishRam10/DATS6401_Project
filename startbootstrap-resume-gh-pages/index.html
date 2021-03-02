@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Harish Ram | DATS6401 Individual Project</title>
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v5.15.1/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Saira+Extra+Condensed:500,700" rel="stylesheet"
+        type="text/css" />
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,800,800i" rel="stylesheet" type="text/css" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+
+
+
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+        <script>
+
+            google.charts.load('current',{'packages':['corechart','geochart']});
+            google.charts.setOnLoadCallback(drawAllSheets);
+
+            function drawAllSheets(){
+
+                drawSheetName('average_total_spending','SELECT A,B,C,D,E',averageTotalSpendingCompared);
+                drawSheetName('average_percapita_spending','SELECT A,B,C,D,E',averagePerCapitaSpendingCompared);
+                drawSheetName('healthcare_total_rate','SELECT A,B,C,D,E,F,G,H,I,J,K,L,M',healthcareRateOverTime);
+                drawSheetName('education_rate','SELECT A,B,C,D,E,F,G,H,I,J,K,L,M',educationRateOverTime);
+                drawSheetName('military_rate','SELECT A,B,C,D,E,F,G,H,I,J,K,L,M',militaryRateOverTime);
+                drawSheetName('total_rate_percent','SELECT A,B,C,D',percentChange);
+                drawSheetName('total_spending_compared','SELECT A,F',healthcareMilitaryCompared);
+                drawSheetName('total_spending_compared','SELECT A,G',educationMilitaryCompared);
+                drawSheetName('total_spending_compared','SELECT A,H',totalVsGDP);
+                drawSheetName('average_percapita_spending','SELECT A,B,E',averagePerCapitaMilitaryVsGDP);
+                drawSheetName('average_percapita_spending','SELECT A,C,E',averagePerCapitaHealthcareVsGDP);
+                drawSheetName('average_percapita_spending','SELECT A,D,E',averagePerCapitaEducationVsGDP);
+
+
+            }//drawAllSheets
+
+            function drawSheetName(sheetName,query,responseHandler){
+
+                var queryString = encodeURIComponent(query);
+                var query = new google.visualization.Query(
+                    'https://docs.google.com/spreadsheets/d/1OZmCn7ulW5-Xy2qchEi9WtvRFIAtbpUWj_R_Ik6j6g4/gviz/tq?sheet='
+                    + sheetName + '&headers=1&tq=' + queryString);
+                query.send(responseHandler);
+            }//drawSheetName 
+
+            function checkError(response){
+
+                if (response.isError()){
+                    alert('Error in query!' + ' ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                    return;
+                }
+
+            }//checkError
+
+            function averagePerCapitaHealthcareVsGDP(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Average Healthcare and GDP Per Capita',
+                    vAxis: {title: 'Spending in USD ($)'},
+                    hAxis: {title: 'Country'}
+                };
+
+                var chart = new google.visualization.ColumnChart(document.getElementById('avg_percapita_healthcare_vs_gdp_div'));
+                chart.draw(data,options);
+
+            }//averagePerCapitaEducationVsGDP***
+
+            function averagePerCapitaEducationVsGDP(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Average Education and GDP Per Capita',
+                    bars: 'horizontal',
+                    isStacked: false,
+                    annotations: {alwaysOutside: true},
+                    vAxis: {title:'Country'},
+                    hAxis: {title: 'Spending in USD ($)', format: 'currency'}
+                };
+
+                var chart = new google.visualization.BarChart(document.getElementById('avg_percapita_education_vs_gdp_div'));
+                chart.draw(data,options);
+            }//averagePerCapitaEducationVsGDP***
+
+
+            function averagePerCapitaMilitaryVsGDP(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Average Military and GDP Per Capita',
+                    bars: 'horizontal',
+                    isStacked: false,
+                    annotations: {alwaysOutside: true},
+                    vAxis: {title:'Country'},
+                    hAxis: {title: 'Spending in USD ($)', format: 'currency'}
+                };
+
+                var chart = new google.visualization.BarChart(document.getElementById('avg_percapita_military_vs_gdp_div'));
+                chart.draw(data,options);
+            }//averagePerCapitaMilitaryVsGDP***
+
+
+            function healthcareMilitaryCompared(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                data.sort({column: 1, desc: true});
+    
+                var options = {
+                    colorAxis: {colors: ['#e7711c','#4374e0']}
+                };
+    
+                var chart = new google.visualization.GeoChart(document.getElementById('healthcare_military_compared_div'));
+    
+                chart.draw(data,options);
+
+            }//healthcareMilitaryCompared***
+            function educationMilitaryCompared(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                data.sort({column: 1, desc: true});
+    
+                var options = {
+                    colorAxis: {colors: ['#e7711c','#4374e0']}
+                };
+    
+                var chart = new google.visualization.GeoChart(document.getElementById('education_military_compared_div'));
+    
+                chart.draw(data,options);
+
+            }//educationMilitaryCompared***
+            function totalVsGDP(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+    
+                var options = {
+                    title: 'Total Healthcare, Education and Military Spending to GDP Ratio',
+                    legend: 'none',
+                    bars: 'horizontal',
+                    annotations: {alwaysOutside: true},
+                    vAxis: {title: 'Country'},
+                    hAxis: {title: 'Percent (%)', format: 'percent'}
+                };
+    
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0,1,{
+                    calc: function(dt,row){
+                        return dt.getFormattedValue(row,1);
+                    },
+                    sourceColumn: 1,
+                    type: 'string',
+                    role: 'annotation'
+                }]);
+    
+                var chart = new google.visualization.BarChart(document.getElementById('total_vs_gdp_div'));
+    
+                chart.draw(view,options);
+
+            }//educationMilitaryCompared***
+
+            function averageTotalSpendingCompared(response){
+                checkError(response);
+    
+                var data = response.getDataTable();
+                data.sort({column: 1,desc:true});
+
+                var formatter = new google.visualization.NumberFormat({
+                    fractionDigits: 2, prefix: '$'});
+                
+                formatter.format(data,1);
+
+                var options = {
+                    title: 'Average of Total Spending',
+                    vAxis: {title: '$ USD in Trillions', format: 'short'},
+                    bars: 'horizontal',
+                    hAxis: {title: 'Country'},
+                    bar: {groupWidth: '80%'}
+                };
+    
+                var chart = new google.visualization.ColumnChart(document.getElementById('average_total_spending_div'));
+                chart.draw(data, options);
+    
+            }//averageTotalSpendingCompared***
+
+            function averagePerCapitaSpendingCompared(response){
+                checkError(response);
+    
+                var data = response.getDataTable();
+                data.sort({column: 1,desc:true});
+
+                var formatter = new google.visualization.NumberFormat({
+                    fractionDigits: 2, prefix: '$'});
+                
+                formatter.format(data,1);
+
+                var options = {
+                    title: 'Average Per Capita Spending',
+                    vAxis: {title: '$USD', format: 'currency'},
+                    bars: 'horizontal',
+                    hAxis: {title: 'Country'},
+                    bar: {groupWidth: '80%'}
+                };
+    
+                var chart = new google.visualization.ColumnChart(document.getElementById('average_percapita_spending_div'));
+                chart.draw(data, options);
+    
+            }//averagePerCapitaSpendingCompared***
+
+            function healthcareRateOverTime(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                //data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Healthcare Spending Rate',
+                    vAxis: {title: 'Rate of Change'},
+                    hAxis: {title: 'Year'}
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('healthcare_rate_over_time_div'));
+                chart.draw(data,options);
+            }//gdpPerCapita
+
+            function educationRateOverTime(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                //data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Education Spending Rate',
+                    vAxis: {title: 'Rate of Change'},
+                    hAxis: {title: 'Year'}
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('education_rate_over_time_div'));
+                chart.draw(data,options);
+            }//educationRateOverTime
+
+            function militaryRateOverTime(response){
+                checkError(response);
+
+                var data = response.getDataTable();
+                //data.sort({column: 1, desc: true});
+
+                var options = {
+                    title: 'Military Spending Rate',
+                    vAxis: {title: 'Rate of Change'},
+                    hAxis: {title: 'Year'}
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('military_rate_over_time_div'));
+                chart.draw(data,options);
+            }//militaryRateOverTime
+            
+            function percentChange(response){
+                checkError(response);
+    
+                var data = response.getDataTable();
+    
+                var options = {
+                    title: 'Percent Change from 2011 to 2018',
+                    bars: 'horizontal',
+                    annotations: {alwaysOutside: true},
+                    isStacked: true,
+                    vAxis: {title: 'Country'},
+                    hAxis: {title: 'Percent (%)'}
+                };
+    
+                var view = new google.visualization.DataView(data);
+                view.setColumns([0,1,{
+                    calc: function(dt,row){
+                        return Math.ceil(dt.getFormattedValue(row,1))+'%';
+                    },
+                    sourceColumn: 1,
+                    type: 'string',
+                    role: 'annotation'
+                }]);
+    
+                var chart = new google.visualization.BarChart(document.getElementById('percent_change_div'));
+    
+                chart.draw(data,options);
+            }
+        </script>
+</head>
+
+<body id="page-top">
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="sideNav">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">
+            <span class="d-block d-lg-none">Harish Ram</span>
+            <span class="d-none d-lg-block"><img class="img-fluid img-profile rounded-circle mx-auto mb-2"
+                    src="assets/img/profile.jpg" alt="" /></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span
+                class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#about">Overall Spending</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#experience">Per Capita Spending</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#interests">Rates</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#awards">Percent Change</a></li>
+                <li class="nav-item"><a class="nav-link js-scroll-trigger" href="#references">References</a></li>
+            </ul>
+        </div>
+    </nav>
+    <!-- Page Content-->
+    <div class="container-fluid p-0">
+        <!-- About-->
+        <section class="resume-section" id="about">
+            <div class="resume-section-content">
+                <h2 class="mb-5">Global Spending Comparison</h2>
+                <div class="flex-wrapper">
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0"><span>Total Healthcare to Military Spending Ratio</span></h3>
+                            <h4 class="subheading mb-3">2011-2018</h2>
+                                <p>In the chart below, we’re dividing the sum of healthcare expenditures from 2011 to 2018 by the sum of military expenditures during the same period. The result is a ratio that tells us how each country’s government allocates their healthcare resources relative to their military resources. Surprisingly, the only country whose ratios is under 1 – which means they spend a fraction on healthcare of what they spend on their military – is Saudi Arabia. Most other countries like India and Russia spend very similar amounts in both areas which is why their ratio is close to 1. On the other hand, Germany and Japan spend almost 9-10 times more on healthcare than their military.</p>
+                                <div class="graph" id='healthcare_military_compared_div' style='width: 1200px; height:500px;'></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0"><span>Total Education to Military Spending Ratio</span></h3>
+                            <h4 class="subheading mb-3">2011-2018</h2>
+                            <p>In this chart, we are performing the same ratio except this time it is total education to military spending. This graphic has few outliers besides Brazil who actually spends 4 times more on their education system than their military. Some countries including China, Saudi Arabia and Russia are the only ones in this list that spend less on education than military. Otherwise, most countries fall in the category of spending in the range of 1-3 times more on education.</p>
+                            <div class="graph" id='education_military_compared_div' style='width: 1200px; height:500px;'></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0"><span>Total Healthcare, Education and Military Spending to GDP Ratio </span></h3>
+                            <h4 class="subheading mb-3">2011-2018</h2>
+                            <p>Here, we are totaling all the military, healthcare and education expenditures from 2011 to 2018 and dividing by the sum of the GDP for each country in this same period. This visualization can tell us how much of each country’s GDP is being allocated to these 3 big areas of spending. Some notable points comprise of the US, China and India spending less than 10% of their GDP on their healthcare, education and military, while most other countries spend around 10 – 25% of their GDP.</p>
+                            <div class="graph" id='total_vs_gdp_div' style='width: 1200px; height:500px;'></div>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-0"><span>Average of Total Spending</span></h3>
+                            <div class="subheading mb-3">2011-2018</div>
+                            <p>Taking a step back and looking at all the expenditures versus GDP as a whole, the graph below shows the average expenditure cost in healthcare, education and military from 2011 to 2018. Included is the average GDP from 2011 to 2018 corresponding to each country shown in green.</p>
+                            <div class="graph" id='average_total_spending_div' style='width: 900px; height:500px;'></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <hr class="m-0" />
+        <!-- Experience-->
+        <section class="resume-section" id="experience">
+            <div class="resume-section-content">
+                <h2 class="mb-5">Per Capita</h2>
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0"><span>Average Military and GDP Per Capita</span></h3>
+                        <h4 class="subheading mb-3">2011-2018</h2>
+                            <p>This graph shows the average per capita value of Military and GDP for their respective country from 2011 to 2018. It is interesting to see how Saudi Arabia spends a similar amount in military per capita as the US despite bringing in a significantly lower GDP. Furthermore, Australia seems to have a larger GDP per capita than the United States due to their much smaller population, but spends almost half the amount on their military per capita.</p>
+                            
+                            <div class="graph" id='avg_percapita_military_vs_gdp_div' style='width: 1200px; height:500px;'></div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0"><span>Average Healthcare and GDP Per Capita</span></h3>
+                        <h4 class="subheading mb-3">2011-2018</h2>
+                            <p>The graph below compares the average healthcare expenditure per capita in blue next to the average GDP per capita for several of the G20 countries. These values are calculated averages in the time period of 2011 to 2018. At first glance, we can see that the US spends almost $4,000 more on healthcare per capita than the next country. On the other side of the spectrum, India spends around $60 on healthcare per capita while china spends only 6 times more than that. This value can be explained by their massive population numbers.</p>
+                            <div class="graph"  id='avg_percapita_healthcare_vs_gdp_div' style='width: 1200px; height:500px;'></div>
+
+                    </div>
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0"><span>Average Education and GDP Per Capita</span></h3>
+                        <div class="subheading mb-3">2011-2018</div>
+                        <p>We already know that Australia has the largest GDP and Education per capita given their population size. Comparing this observation to countries that have a significantly larger population such as India and China, we can see that these countries spend less than $200 per capita on education.</p>
+                        <div class="graph"  id='avg_percapita_education_vs_gdp_div' style='width: 1200px; height:500px;'></div>
+                    </div>
+
+                </div>
+                <div class="d-flex flex-column flex-md-row justify-content-between mb-5">
+                    <div class="flex-grow-1">
+                        <h3 class="mb-0"><span>Average Per Capita Spending</span></h3>
+                        <div class="subheading mb-3">from 2011-2018</div>
+                        <p>The column chart below sums up the previous three graphs by showing the average values of Military, Healthcare, Education and GDP from 2011-2018 right next to one another. It is quite evident that expenditures in those three areas are not even close to the GDP. Thus, it begs the question: how is money being allocated in these countries outside of healthcare, military and education?</p>
+                        <div class="graph" id='average_percapita_spending_div' style='width: 900px; height:500px;'></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <hr class="m-0" />
+        <!-- Education-->
+        
+        <!-- Interests-->
+        <section class="resume-section" id="interests">
+            <div class="resume-section-content">
+                <div class="d-flex flex-column flex-md-row justify-content-between">
+                    <div class="flex-grow-1" style="margin-bottom: 60px">
+                        <h2 class="mb-5">Rate of Change</h2>
+                        <h3 class="mb-0"><span>Healthcare Spending Rate</span></h3>
+                        <div class="subheading mb-3">from 2011-2018</div>
+                        <p>Below, we are looking at the rate at which the total expenditures in healthcare for several G20 countries change over time. These values, for x-axis tick mark, are calculated by subtracting the total value spent on healthcare for one year by the previous year and dividing by the previous year’s value. It is interesting to see these values displayed on a line graph because it can tell a story about that nation’s healthcare system. For instance, Russia’s healthcare expenditures dropped by a rate of 0.32 from 2014 to 2015 whereas in 2016 to 2017, the rate increased to 0.25.  </p>
+                        <div class="graph" id='healthcare_rate_over_time_div' style='width: 1200px; height:500px;'></div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between">
+                    <div class="flex-grow-1" style="margin-bottom: 60px">
+                        <h3 class="mb-0"><span>Education Spending Rate</span></h3>
+                        <div class="subheading mb-3">from 2011-2018</div>
+                        <p>Let’s look at the education spending rate from 2011 to 2018 below. Here, we can see a similar story unfolding for Russia as the rate at which their education expenditures dropped in 2014 to 2015 is superseded by the massive increase in 2016 to 2017. Looking at extreme values on a line graph can tell us a lot of economic crises that might have occurred during this time period.</p>
+                        <div class="graph" id='education_rate_over_time_div' style='width: 1200px; height:500px;'></div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-md-row justify-content-between">
+                    <div class="flex-grow-1" style="margin-bottom: 60px">
+                        <h3 class="mb-0"><span>Military Spending Rate</span></h3>
+                        <div class="subheading mb-3">from 2011-2018</div>
+                        <p>The total military spending rate over the years of 2011 to 2018 show how much resource each country’s respective governments pool into military advancement each year. Simply by looking at the behavior of all these lines, we can see that the period of 2014 to 2015 was especially impactful on many countries including Brazil, Russia, Germany, France, Japan and Australia as the military spending rate dropped significantly. Furthermore, in the next year, almost all the previous countries listed (except Russia who saw an increase in the following year) rose back up.</p>
+                        <div class="graph" id='military_rate_over_time_div' style='width: 1200px; height:500px;'></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <hr class="m-0" />
+        <!-- Awards-->
+        <section class="resume-section" id="awards">
+            <div class="resume-section-content">
+                <h2 class="mb-5"><span>Change over Time</span></h2>
+                <h3 class="mb-0"><span>Percent Change in Spending</span></h3>
+                    <div class="subheading mb-3">from 2011-2018</div>
+                    <p>The data visualized below is the percent change of military, health and educational expenditures in 2011 to 2018. Therefore, we can infer information about overall changes in these spending areas in the last decade. In this graphic, we can surmise which countries have made increases or decreases in their expenditures and which countries have maintained their budget since 2011. We can see that the US and Germany have very little percent increases in all categories, while China, India, Saudi Arabia and South Korea have seen major advancements in all their spending allocations. </p>
+                    <div class="graph" id='percent_change_div' style='width: 1200px; height:500px;'></div>
+            </div>
+        </section>
+    </div>
+    <section class="resume-section" id="references">
+        <div class="resume-section-content">
+            <h2 class="mb-5"><span>Works Cited</span></h2>
+            <ul>
+                <li><b>Data Sources:</b></li>
+                <ul>
+                    <div style="text-indent: -36px; padding-left: 36px;">
+                        <li>Stockholm International Peace Research Institute ( SIPRI ), Yearbook: Armaments, Disarmament and International Security.
+                            https://data.worldbank.org/indicator/MS.MIL.XPND.CD?end=2019&start=1960&view=chart</li>
+                        <li>World Health Organization Global Health Expenditure database ( apps.who.int/nha/database ).
+                            https://data.worldbank.org/indicator/SH.XPD.CHEX.PC.CD</li>
+                        <li>World Bank staff estimates using data from the United Nations Statistics Division's Statistical Yearbook, and the UNESCO Institute for Statistics online database.
+                            https://data.worldbank.org/indicator/NY.ADJ.AEDU.CD</li>
+                        <li>United Nations Population Division. World Population Prospects: 2019 Revision, 
+                            Census reports and other statistical publications from national statistical offices, 
+                            Eurostat: Demographic Statistics, 
+                            United Nations Statistical Division. Population and Vital Statistics Reprot ( various years ), 
+                            U.S. Census Bureau: International Database, and 
+                            Secretariat of the Pacific Community: Statistics and Demography Programme.
+                            https://data.worldbank.org/indicator/SP.POP.TOTL</li>
+                    </div>
+                </ul>
+                <li><b>Website Design:</b></li>
+                    <ul>
+                        <div style="text-indent: -36px; padding-left: 36px;">
+                            <li>Taylor, C. (2017, October 17). Resume - Free Resume/CV bootstrap template. Retrieved February 22, 2021, from https://startbootstrap.com/theme/resume</li>
+                            <li>Kutschera, F. (2014, July 10). Freebie: Google material design shadow helper. Retrieved March 02, 2021, from https://medium.com/@Florian/freebie-google-material-design-shadow-helper-2a0501295a2d</li>
+                            <li>Guillaume 16311 gold badge11 silver badge77 bronze badges, G. (2015, February 10). Use before and after pseudo-element to make a line. Retrieved March 02, 2021, from https://stackoverflow.com/questions/28434521/use-before-after-pseudo-element-to-make-a-line/28434792</li>
+                        </div>
+                    </ul>
+            </ul>
+        </div>
+    </section>
+</div>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Third party plugin JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <!-- Core theme JS-->
+    <script src="js/scripts.js"></script>
+</body>
+
+</html>
